@@ -1,0 +1,5 @@
+/* SPA fallback — route all requests to index.html */
+/* This is required for React Router / client-side routing */
+
+/assets/*  /assets/:splat  200
+/*         /index.html     200

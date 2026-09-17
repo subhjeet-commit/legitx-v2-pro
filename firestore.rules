@@ -1,0 +1,285 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ═══════════════════════════════════════════════════════════════
+    //  LegitX V2 — Firestore Security Rules  (Updated 2026-04-02)
+    // ═══════════════════════════════════════════════════════════════
+    //
+    //  Database structure:
+    //
+    //    users/{uid}                        ← email, licenseCode, licensed, status,
+    //                                         sessionToken, sessionBoundAt, forceLogoutAt,
+    //                                         bannedHwids, deactivatedAt, suspendedAt, bannedAt
+    //    users/{uid}/features/flags         ← bypass, streamerMode, formBypass, stopNetwork
+    //    users/{uid}/hwid/data              ← permanentHash, windowsHash, windowsReset,
+    //                                         fullReset, lastSelfReset, computerName,
+    //                                         registeredAt, lastLogin, permanent, windows
+    //    licenses/{code}                    ← active, uid, plan, trialDays, kernelAccess,
+    //                                         redeemedAt, expiresAt, createdAt, generatedBy
+    //    admins/{uid}                       ← email, role, addedBy, addedAt
+    //    admin_logs/{id}                    ← action, target, details, adminUid,
+    //                                         adminEmail, timestamp
+    //    resellers/{id}                     ← name, email, username, platform, active,
+    //                                         permissions, keysUsed, keyLimit,
+    //                                         generatedCodes, lastActivity, etc.
+    //    banned_hwids/{hash}                ← uid, email, bannedAt, reason
+    //    site_config/{docId}                ← download page content managed by admins
+    //    system_config/{docId}              ← force_logout, maintenance
+    //    announcements/{annId}              ← title, body, type, pinned, createdAt, createdBy
+    //
+    // ═══════════════════════════════════════════════════════════════
+
+    // ── Helper: Is the requester the super-admin or in admins collection ──
+    function isAdmin() {
+      return request.auth != null
+        && (request.auth.token.email == "PASTE YOUR SUPER ADMIN EMAIL HERE"
+            || exists(/databases/$(database)/documents/admins/$(request.auth.uid)));
+    }
+
+    // ── Helper: Is the requester an active reseller ──
+    function isActiveReseller() {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/resellers/$(request.auth.uid))
+        && get(/databases/$(database)/documents/resellers/$(request.auth.uid)).data.active == true;
+    }
+
+    // ── Helper: Get the reseller's permissions object ──
+    function resellerPerms() {
+      return get(/databases/$(database)/documents/resellers/$(request.auth.uid)).data.permissions;
+    }
+
+    // ══════════════════════════════════════════════════════
+    //  USERS
+    // ══════════════════════════════════════════════════════
+
+    match /users/{userId} {
+      // Read: owner, admins, active resellers
+      allow read: if request.auth != null
+        && (request.auth.uid == userId
+            || isAdmin()
+            || isActiveReseller());
+
+      // Owner can update ONLY safe fields on their own doc:
+      //   email, licensed, licenseCode — set during login/redeem
+      //   sessionToken, sessionBoundAt — set by WPF session binding
+      //   status — NOT allowed (only admin/reseller can change)
+      allow create: if request.auth != null
+        && request.auth.uid == userId;
+
+      allow update: if request.auth != null
+        && (request.auth.uid == userId
+            && request.resource.data.diff(resource.data).affectedKeys()
+                .hasOnly(["email", "licensed", "licenseCode", "sessionToken", "sessionBoundAt"])
+            || isAdmin()
+            || (isActiveReseller()
+                && (resellerPerms().actions.deactivate == true
+                    || resellerPerms().actions.reactivate == true
+                    || resellerPerms().actions.suspend == true
+                    || resellerPerms().actions.unsuspend == true
+                    || resellerPerms().actions.revokeLicense == true
+                    || resellerPerms().resets.fullAccountReset == true)));
+
+      allow delete: if isAdmin();
+
+      // ── Feature flags sub-collection ──
+      match /features/{docId} {
+        allow read: if request.auth != null
+          && (request.auth.uid == userId
+              || isAdmin()
+              || isActiveReseller());
+
+        // Owner can write (WPF creates/updates initial flags)
+        // Admins have full access
+        // Resellers with any feature permission can write
+        allow write: if request.auth != null
+          && (request.auth.uid == userId
+              || isAdmin()
+              || (isActiveReseller()
+                  && (resellerPerms().features.bypass == true
+                      || resellerPerms().features.streamerMode == true
+                      || resellerPerms().features.formBypass == true
+                      || resellerPerms().features.stopNetwork == true)));
+      }
+
+      // ── Hardware ID sub-collection ──
+      match /hwid/{docId} {
+        allow read: if request.auth != null
+          && (request.auth.uid == userId
+              || isAdmin()
+              || isActiveReseller());
+
+        // Owner can create (first login) and update (subsequent logins, self-reset)
+        allow create: if request.auth != null
+          && request.auth.uid == userId;
+
+        allow update: if request.auth != null
+          && (request.auth.uid == userId
+              || isAdmin()
+              || (isActiveReseller()
+                  && (resellerPerms().resets.windowsReset == true
+                      || resellerPerms().resets.fullAccountReset == true)));
+
+        // Only admins and resellers with fullAccountReset can delete HWID docs
+        allow delete: if isAdmin()
+          || (isActiveReseller()
+              && resellerPerms().resets.fullAccountReset == true);
+      }
+    }
+
+    // ══════════════════════════════════════════════════════
+    //  LICENSES
+    // ══════════════════════════════════════════════════════
+
+    match /licenses/{code} {
+      // Single-doc get: allowed for authenticated users + unauthenticated
+      // code verification (codes are cryptographically random ~2^60 combos).
+      allow get: if code.size() >= 10 && code.size() <= 30;
+
+      // List/query: restricted to authenticated users (prevents enumeration)
+      allow list: if request.auth != null;
+
+      allow delete: if isAdmin();
+
+      // Admins + resellers with license type perms can create
+      allow create: if isAdmin()
+        || (isActiveReseller()
+            && (resellerPerms().licenseTypes.trial == true
+                || resellerPerms().licenseTypes.permanent == true));
+
+      // Update rules (evaluated top-to-bottom, first match wins):
+      //
+      // 1. Admins: unrestricted
+      // 2. Resellers with revoke/fullReset perms: unrestricted
+      // 3. Regular users — REDEEM: claim an unclaimed active code
+      //    (can only set uid, redeemedAt, expiresAt)
+      // 4. Regular users — TRIAL EXPIRY: the WPF app deactivates
+      //    expired trial licenses owned by the current user
+      //    (can only set active=false on their own license)
+      allow update: if request.auth != null
+        && (isAdmin()
+          || (isActiveReseller()
+              && (resellerPerms().actions.revokeLicense == true
+                  || resellerPerms().resets.fullAccountReset == true))
+          // ── Redeem: user claims an unclaimed active license ──
+          || (request.resource.data.active == true
+              && (resource.data.uid == "" || resource.data.uid == request.auth.uid)
+              && request.resource.data.uid == request.auth.uid
+              && request.resource.data.diff(resource.data).affectedKeys()
+                  .hasOnly(["uid", "redeemedAt", "expiresAt"]))
+          // ── Trial expiry: user deactivates their own expired license ──
+          || (resource.data.uid == request.auth.uid
+              && request.resource.data.active == false
+              && request.resource.data.diff(resource.data).affectedKeys()
+                  .hasOnly(["active"])));
+    }
+
+    // ══════════════════════════════════════════════════════
+    //  ADMIN ACCOUNTS
+    // ══════════════════════════════════════════════════════
+
+    match /admins/{adminId} {
+      allow read, write: if isAdmin();
+    }
+
+    // ══════════════════════════════════════════════════════
+    //  RESELLERS (with RBAC permissions)
+    // ══════════════════════════════════════════════════════
+
+    match /resellers/{resellerId} {
+      // Admins have full access (CRUD + permissions management)
+      allow read, write: if isAdmin();
+
+      // Resellers can read their own UID-keyed document
+      allow read: if request.auth != null
+        && request.auth.uid == resellerId;
+
+      // Allow any authenticated user to LIST/query resellers filtered by own email
+      // (needed for first login before UID-keyed doc exists)
+      allow list: if request.auth != null
+        && resource.data.email == request.auth.token.email;
+
+      // Resellers can CREATE their own UID-keyed document (migration from auto-ID doc)
+      // Only if the email in the new doc matches their auth email
+      allow create: if request.auth != null
+        && resellerId == request.auth.uid
+        && request.resource.data.email == request.auth.token.email;
+
+      // Resellers can delete the OLD auto-ID doc if the email matches their auth email
+      // (cleanup after migration to UID-keyed doc)
+      allow delete: if request.auth != null
+        && resource.data.email == request.auth.token.email;
+
+      // Resellers can update ONLY their operational counters
+      // (keysUsed, generatedCodes, lastActivity) — NOT permissions or active flag
+      allow update: if request.auth != null
+        && request.auth.uid == resellerId
+        && resource.data.active == true
+        && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(["keysUsed", "generatedCodes", "lastActivity"]);
+    }
+
+    // ══════════════════════════════════════════════════════
+    //  ADMIN ACTIVITY LOGS
+    // ══════════════════════════════════════════════════════
+
+    match /admin_logs/{logId} {
+      allow read: if isAdmin();
+      allow create: if isAdmin();
+      allow update, delete: if false;  // Logs are immutable
+    }
+
+    // ══════════════════════════════════════════════════════
+    //  BANNED HWIDs
+    // ══════════════════════════════════════════════════════
+
+    match /banned_hwids/{hash} {
+      // Any authenticated user can read (WPF app checks at startup)
+      allow read: if request.auth != null;
+      // Only admins can ban/unban
+      allow write: if isAdmin();
+    }
+
+    // ══════════════════════════════════════════════════════
+    //  SITE CONFIG (Download page, requirements, steps)
+    // ══════════════════════════════════════════════════════
+
+    match /site_config/{docId} {
+      // Any authenticated user can read (user panel fetches download page content)
+      allow read: if request.auth != null;
+      // Only admins can write (admin panel manages this)
+      allow write: if isAdmin();
+    }
+
+    // ══════════════════════════════════════════════════════
+    //  SYSTEM CONFIG (Force logout, maintenance mode)
+    // ══════════════════════════════════════════════════════
+
+    match /system_config/{docId} {
+      // Any authenticated user can read (WPF app checks force_logout + maintenance)
+      allow read: if request.auth != null;
+      // Only admins can write (admin panel triggers force logout / maintenance)
+      allow write: if isAdmin();
+    }
+
+    // ══════════════════════════════════════════════════════
+    //  ANNOUNCEMENTS
+    // ══════════════════════════════════════════════════════
+
+    match /announcements/{annId} {
+      // Any authenticated user can read (user panel, reseller panel)
+      allow read: if request.auth != null;
+      // Only admins can create, update, delete
+      allow write: if isAdmin();
+    }
+
+    // ══════════════════════════════════════════════════════
+    //  CATCH-ALL — deny everything not explicitly matched
+    // ══════════════════════════════════════════════════════
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

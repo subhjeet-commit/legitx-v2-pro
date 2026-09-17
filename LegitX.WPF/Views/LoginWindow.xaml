@@ -1,0 +1,300 @@
+<Window x:Class="LegitX.WPF.Views.LoginWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:conv="clr-namespace:LegitX.WPF.Converters"
+        Title="LegitX V2 — Login"
+        Icon="/Assets/app.ico"
+        Width="440" Height="660"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        ResizeMode="NoResize"
+        UseLayoutRounding="True"
+        SnapsToDevicePixels="True"
+        FontFamily="{DynamicResource InterFont}">
+
+    <Window.Resources>
+        <CubicEase x:Key="EaseOut" EasingMode="EaseOut"/>
+        <conv:InverseLengthToVisibilityConverter x:Key="InvLenVis"/>
+    </Window.Resources>
+
+    <!-- OUTER SHELL WITH SHADOW -->
+    <Border Background="{DynamicResource BgBrush}" CornerRadius="18"
+            BorderBrush="#18FFFFFF" BorderThickness="1"
+            MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+        <Border.Effect>
+            <DropShadowEffect Color="#000000" BlurRadius="40" ShadowDepth="0" Opacity="0.7"/>
+        </Border.Effect>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- ═══ TITLE BAR ═══ -->
+            <Border Grid.Row="0" Padding="18,12" Background="#06FFFFFF" CornerRadius="18,18,0,0">
+                <Grid>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Path Data="M12,1 L3,5 L3,11 C3,16.55 6.84,21.74 12,23 C17.16,21.74 21,16.55 21,11 L21,5 Z"
+                              Fill="{StaticResource AccentBrush}" Width="11" Height="11" Stretch="Uniform"
+                              Margin="0,0,7,0" VerticalAlignment="Center" Opacity="0.8"/>
+                        <TextBlock Text="LegitX V2" FontSize="12" FontWeight="SemiBold"
+                                   Foreground="#FF8a8a9a" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <Button HorizontalAlignment="Right" Style="{StaticResource IconBtn}"
+                            Click="CloseBtn_Click" Width="30" Height="30" ToolTip="Close">
+                        <Path Data="M18,6 L6,18 M6,6 L18,18" Stroke="#FF71717a" StrokeThickness="1.5"
+                              Width="10" Height="10" Stretch="Uniform"/>
+                    </Button>
+                </Grid>
+            </Border>
+
+            <!-- Accent gradient line -->
+            <Border Grid.Row="1" Height="1">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                        <GradientStop Color="#00EF4444" Offset="0"/>
+                        <GradientStop Color="#FFEF4444" Offset="0.25"/>
+                        <GradientStop Color="#FFFF6B6B" Offset="0.5"/>
+                        <GradientStop Color="#FFEF4444" Offset="0.75"/>
+                        <GradientStop Color="#00EF4444" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+            </Border>
+
+            <!-- ═══ LOGIN CONTENT ═══ -->
+            <Grid Grid.Row="2" Margin="40,14,40,32">
+                <StackPanel VerticalAlignment="Center">
+
+                    <!-- App Logo — layered glow -->
+                    <Grid HorizontalAlignment="Center" Margin="0,0,0,22">
+                        <Border Width="80" Height="80" CornerRadius="40" Opacity="0.15">
+                            <Border.Background>
+                                <RadialGradientBrush>
+                                    <GradientStop Color="#FFEF4444" Offset="0"/>
+                                    <GradientStop Color="#00EF4444" Offset="1"/>
+                                </RadialGradientBrush>
+                            </Border.Background>
+                        </Border>
+                        <Border Width="68" Height="68" CornerRadius="34">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                    <GradientStop Color="#FFEF4444" Offset="0"/>
+                                    <GradientStop Color="#FFB91C1C" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                            <Border.Effect>
+                                <DropShadowEffect Color="#FFEF4444" BlurRadius="20" ShadowDepth="0" Opacity="0.35"/>
+                            </Border.Effect>
+                            <Path Data="M12,1 L3,5 L3,11 C3,16.55 6.84,21.74 12,23 C17.16,21.74 21,16.55 21,11 L21,5 Z M12,7 C13.1,7 14,7.9 14,9 L14,11 L16,11 L16,17 L8,17 L8,11 L10,11 L10,9 C10,7.9 10.9,7 12,7 Z"
+                                  Fill="White" Width="28" Height="28" Stretch="Uniform"
+                                  HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </Grid>
+
+                    <!-- Title -->
+                    <TextBlock Text="Welcome Back" FontSize="24" FontWeight="Bold"
+                               Foreground="White" HorizontalAlignment="Center" Margin="0,0,0,4"/>
+                    <TextBlock Text="Sign in to your LegitX V2 account" FontSize="12.5"
+                               Foreground="#FF71717a" HorizontalAlignment="Center" Margin="0,0,0,26"/>
+
+                    <!-- ═══ Google Sign In Button ═══ -->
+                    <Button x:Name="GoogleBtn" Height="44" Cursor="Hand"
+                            Click="GoogleSignIn_Click" Margin="0,0,0,18">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Background" Value="#FF1e1e2e"/>
+                                <Setter Property="Foreground" Value="#FFd4d4d8"/>
+                                <Setter Property="FontFamily" Value="{StaticResource InterFont}"/>
+                                <Setter Property="FontSize" Value="13"/>
+                                <Setter Property="FontWeight" Value="Medium"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border x:Name="GBd" Background="{TemplateBinding Background}"
+                                                    CornerRadius="10" BorderBrush="#FF2e2e42" BorderThickness="1"
+                                                    Padding="16,10">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="GBd" Property="Background" Value="#FF282840"/>
+                                                    <Setter TargetName="GBd" Property="BorderBrush" Value="#FF3e3e58"/>
+                                                </Trigger>
+                                                <Trigger Property="IsPressed" Value="True">
+                                                    <Setter TargetName="GBd" Property="Background" Value="#FF32324e"/>
+                                                </Trigger>
+                                                <Trigger Property="IsEnabled" Value="False">
+                                                    <Setter Property="Opacity" Value="0.5"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </Button.Style>
+                        <StackPanel Orientation="Horizontal">
+                            <!-- Google "G" logo (4-color paths) -->
+                            <Canvas Width="18" Height="18" Margin="0,0,10,0">
+                                <Path Data="M17.64,9.2 C17.64,8.57 17.58,7.95 17.48,7.36 L9,7.36 L9,10.85 L13.84,10.85 C13.63,11.98 12.96,12.93 11.96,13.56 L11.96,15.82 L14.92,15.82 C16.66,14.25 17.64,11.94 17.64,9.2 Z"
+                                      Fill="#4285F4"/>
+                                <Path Data="M9,18 C11.43,18 13.47,17.2 14.92,15.82 L11.96,13.56 C11.12,14.1 10.14,14.44 9,14.44 C6.65,14.44 4.67,12.87 3.96,10.73 L0.95,10.73 L0.95,13.06 C2.38,15.87 5.48,18 9,18 Z"
+                                      Fill="#34A853"/>
+                                <Path Data="M3.96,10.73 C3.78,10.19 3.68,9.61 3.68,9 C3.68,8.39 3.78,7.81 3.96,7.27 L3.96,4.94 L0.95,4.94 C0.34,6.16 0,7.53 0,9 C0,10.47 0.34,11.84 0.95,13.06 L3.96,10.73 Z"
+                                      Fill="#FBBC05"/>
+                                <Path Data="M9,3.58 C10.32,3.58 11.51,4.03 12.44,4.93 L14.98,2.39 C13.47,0.98 11.43,0 9,0 C5.48,0 2.38,2.13 0.95,4.94 L3.96,7.27 C4.67,5.13 6.65,3.58 9,3.58 Z"
+                                      Fill="#EA4335"/>
+                            </Canvas>
+                            <TextBlock x:Name="GoogleBtnText" Text="Continue with Google" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+
+                    <!-- ═══ Divider ═══ -->
+                    <Grid Margin="0,0,0,18">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="0" Height="1" Background="#FF27273a" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Column="1" Text="or continue with email" FontSize="11"
+                                   Foreground="#FF52525b" Margin="14,0" VerticalAlignment="Center"/>
+                        <Border Grid.Column="2" Height="1" Background="#FF27273a" VerticalAlignment="Center"/>
+                    </Grid>
+
+                    <!-- Email field -->
+                    <TextBlock Text="EMAIL" FontSize="10" FontWeight="SemiBold"
+                               Foreground="#FF52525b" Margin="4,0,0,6"/>
+                    <Border x:Name="EmailBorder" CornerRadius="10" BorderThickness="1"
+                            BorderBrush="#FF27273a" Background="#FF101020"
+                            Padding="14,0" Height="44" Margin="0,0,0,14">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="10"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Path Grid.Column="0" Data="M4,4 L20,4 C21.1,4 22,4.9 22,6 L22,18 C22,19.1 21.1,20 20,20 L4,20 C2.9,20 2,19.1 2,18 L2,6 C2,4.9 2.9,4 4,4 Z M22,6 L12,13 L2,6"
+                                  Stroke="#FF4a4a62" StrokeThickness="1.2" Fill="Transparent"
+                                  Width="16" Height="14" Stretch="Uniform" VerticalAlignment="Center"/>
+                            <TextBox x:Name="EmailBox" Grid.Column="2"
+                                     FontFamily="{StaticResource InterFont}" FontSize="13"
+                                     Foreground="#FFe4e4e7" Background="Transparent"
+                                     BorderThickness="0" VerticalAlignment="Center"
+                                     CaretBrush="{StaticResource AccentBrush}"
+                                     GotFocus="InputField_GotFocus" LostFocus="InputField_LostFocus"
+                                     KeyDown="Input_KeyDown"/>
+                            <TextBlock Grid.Column="2" Text="you@email.com" FontSize="13"
+                                       Foreground="#FF3f3f46" VerticalAlignment="Center"
+                                       IsHitTestVisible="False"
+                                       Visibility="{Binding Text.Length, ElementName=EmailBox, Converter={StaticResource InvLenVis}}"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- Password field -->
+                    <TextBlock Text="PASSWORD" FontSize="10" FontWeight="SemiBold"
+                               Foreground="#FF52525b" Margin="4,0,0,6"/>
+                    <Border x:Name="PasswordBorder" CornerRadius="10" BorderThickness="1"
+                            BorderBrush="#FF27273a" Background="#FF101020"
+                            Padding="14,0" Height="44" Margin="0,0,0,4">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="10"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Path Grid.Column="0" Data="M18,8 L16,8 L16,6 C16,3.79 14.21,2 12,2 C9.79,2 8,3.79 8,6 L8,8 L6,8 C4.9,8 4,8.9 4,10 L4,20 C4,21.1 4.9,22 6,22 L18,22 C19.1,22 20,21.1 20,20 L20,10 C20,8.9 19.1,8 18,8 Z M12,17 C10.9,17 10,16.1 10,15 C10,13.9 10.9,13 12,13 C13.1,13 14,13.9 14,15 C14,16.1 13.1,17 12,17 Z"
+                                  Fill="#FF4a4a62" Width="16" Height="16" Stretch="Uniform" VerticalAlignment="Center"/>
+                            <!-- Hidden PasswordBox (default visible) -->
+                            <PasswordBox x:Name="PasswordBox" Grid.Column="2"
+                                         FontFamily="{StaticResource InterFont}" FontSize="13"
+                                         Foreground="#FFe4e4e7" Background="Transparent"
+                                         BorderThickness="0" VerticalAlignment="Center"
+                                         CaretBrush="{StaticResource AccentBrush}"
+                                         PasswordChar="●"
+                                         GotFocus="InputField_GotFocus" LostFocus="InputField_LostFocus"
+                                         KeyDown="Input_KeyDown"/>
+                            <!-- Plain TextBox for revealed password (hidden by default) -->
+                            <TextBox x:Name="PasswordTextBox" Grid.Column="2"
+                                     FontFamily="{StaticResource InterFont}" FontSize="13"
+                                     Foreground="#FFe4e4e7" Background="Transparent"
+                                     BorderThickness="0" VerticalAlignment="Center"
+                                     CaretBrush="{StaticResource AccentBrush}"
+                                     Visibility="Collapsed"
+                                     GotFocus="InputField_GotFocus" LostFocus="InputField_LostFocus"
+                                     KeyDown="Input_KeyDown"/>
+                            <TextBlock x:Name="PasswordPlaceholder" Grid.Column="2"
+                                       Text="Enter your password" FontSize="13"
+                                       Foreground="#FF3f3f46" VerticalAlignment="Center"
+                                       IsHitTestVisible="False"/>
+                            <Button Grid.Column="3" Style="{StaticResource IconBtn}"
+                                    Click="TogglePassword_Click" Width="28" Height="28" ToolTip="Show password">
+                                <Path x:Name="EyeIcon"
+                                      Data="M12,4.5 C7,4.5 2.73,7.61 1,12 C2.73,16.39 7,19.5 12,19.5 C17,19.5 21.27,16.39 23,12 C21.27,7.61 17,4.5 12,4.5 Z M12,17 C9.24,17 7,14.76 7,12 C7,9.24 9.24,7 12,7 C14.76,7 17,9.24 17,12 C17,14.76 14.76,17 12,17 Z M12,9 C10.34,9 9,10.34 9,12 C9,13.66 10.34,15 12,15 C13.66,15 15,13.66 15,12 C15,10.34 13.66,9 12,9 Z"
+                                      Fill="#FF4a4a62" Width="16" Height="16" Stretch="Uniform"/>
+                            </Button>
+                        </Grid>
+                    </Border>
+
+                    <!-- Error / Success message -->
+                    <TextBlock x:Name="ErrorText" Text="" FontSize="11.5"
+                               Foreground="#FFEF4444" HorizontalAlignment="Center"
+                               Margin="0,12,0,0" Visibility="Collapsed"
+                               TextWrapping="Wrap" TextAlignment="Center"/>
+
+                    <TextBlock x:Name="SuccessText" Text="" FontSize="11.5"
+                               Foreground="#FF22C55E" HorizontalAlignment="Center"
+                               Margin="0,12,0,0" Visibility="Collapsed"
+                               TextWrapping="Wrap" TextAlignment="Center"/>
+
+                    <!-- Sign In button -->
+                    <Button x:Name="LoginBtn" Style="{StaticResource PrimaryBtn}"
+                            Height="46" FontSize="14" FontWeight="SemiBold"
+                            Margin="0,18,0,0" Click="LoginBtn_Click" Cursor="Hand">
+                        <StackPanel Orientation="Horizontal">
+                            <Path Data="M15,3 L19,3 C20.1,3 21,3.9 21,5 L21,19 C21,20.1 20.1,21 19,21 L15,21 M10,17 L15,12 L10,7 M15,12 L3,12"
+                                  Stroke="White" StrokeThickness="1.5" Fill="Transparent"
+                                  Width="16" Height="16" Stretch="Uniform"
+                                  Margin="0,0,8,0" VerticalAlignment="Center" Opacity="0.9"/>
+                            <TextBlock x:Name="LoginBtnText" Text="Sign In" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+
+                    <!-- Loading indicator -->
+                    <StackPanel x:Name="LoadingPanel" Orientation="Horizontal"
+                                HorizontalAlignment="Center" Margin="0,14,0,0" Visibility="Collapsed">
+                        <Border Width="6" Height="6" CornerRadius="3" Margin="2,0" Opacity="0.6">
+                            <Border.Background>
+                                <SolidColorBrush Color="{StaticResource AccentColor}"/>
+                            </Border.Background>
+                        </Border>
+                        <Border Width="6" Height="6" CornerRadius="3" Margin="2,0" Opacity="0.35">
+                            <Border.Background>
+                                <SolidColorBrush Color="{StaticResource AccentColor}"/>
+                            </Border.Background>
+                        </Border>
+                        <Border Width="6" Height="6" CornerRadius="3" Margin="2,0" Opacity="0.15">
+                            <Border.Background>
+                                <SolidColorBrush Color="{StaticResource AccentColor}"/>
+                            </Border.Background>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- Footer -->
+                    <StackPanel HorizontalAlignment="Center" Margin="0,24,0,0">
+                        <TextBlock FontSize="10" Foreground="#FF3f3f46" HorizontalAlignment="Center">
+                            <Run Text="Secured by"/>
+                            <Run Text="Firebase" Foreground="#FF52525b" FontWeight="Medium"/>
+                            <Run Text="•"/>
+                            <Run Text="LegitX V2"/>
+                        </TextBlock>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

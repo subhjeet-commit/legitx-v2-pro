@@ -1,0 +1,44 @@
+<Window x:Class="LegitX.WPF.Views.ToastNotification"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        ShowInTaskbar="False" Topmost="True" ResizeMode="NoResize"
+        Width="320" Height="90" Opacity="0"
+        WindowStartupLocation="Manual">
+
+    <Border x:Name="ToastCard" CornerRadius="12" Margin="0"
+            Background="#F0111113" BorderBrush="#30FFFFFF" BorderThickness="1"
+            Padding="16,12">
+        <Border.Effect>
+            <DropShadowEffect Color="Black" BlurRadius="20" ShadowDepth="4" Opacity="0.5"/>
+        </Border.Effect>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Status icon -->
+            <Grid Grid.Column="0" Width="36" Height="36" Margin="0,0,12,0" VerticalAlignment="Center">
+                <Ellipse Width="36" Height="36" Opacity="0.15">
+                    <Ellipse.Fill>
+                        <SolidColorBrush x:Name="IconGlow" Color="#10b981"/>
+                    </Ellipse.Fill>
+                </Ellipse>
+                <Ellipse Width="10" Height="10">
+                    <Ellipse.Fill>
+                        <SolidColorBrush x:Name="IconDot" Color="#10b981"/>
+                    </Ellipse.Fill>
+                </Ellipse>
+            </Grid>
+
+            <!-- Text -->
+            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                <TextBlock x:Name="TitleText" Text="Activated" FontSize="13" FontWeight="Bold"
+                           Foreground="#FFe4e4e7" Margin="0,0,0,2"/>
+                <TextBlock x:Name="SubText" Text="Sensitivity engine is running" FontSize="10.5"
+                           Foreground="#FF71717a" TextWrapping="Wrap"/>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

@@ -1,0 +1,149 @@
+<Window x:Class="LegitX.WPF.Views.AccountStatusDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="LegitX V2"
+        Width="480" Height="Auto" SizeToContent="Height"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        ResizeMode="NoResize"
+        Topmost="True">
+
+    <Border CornerRadius="16" Background="#FF0c0c18"
+            BorderThickness="1.5" x:Name="DialogBorder">
+
+        <Grid Margin="32,28,32,28">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>  <!-- Icon -->
+                <RowDefinition Height="Auto"/>  <!-- Title -->
+                <RowDefinition Height="Auto"/>  <!-- Subtitle -->
+                <RowDefinition Height="Auto"/>  <!-- Message -->
+                <RowDefinition Height="Auto"/>  <!-- Details card -->
+                <RowDefinition Height="Auto"/>  <!-- Button -->
+                <RowDefinition Height="Auto"/>  <!-- Footer -->
+            </Grid.RowDefinitions>
+
+            <!-- Animated Icon Circle -->
+            <Border Grid.Row="0" Width="72" Height="72" CornerRadius="36"
+                    HorizontalAlignment="Center" Margin="0,0,0,16"
+                    x:Name="IconCircle">
+                <Border.Background>
+                    <RadialGradientBrush>
+                        <GradientStop x:Name="IconGlow1" Color="#30EF4444" Offset="0"/>
+                        <GradientStop x:Name="IconGlow2" Color="#10EF4444" Offset="1"/>
+                    </RadialGradientBrush>
+                </Border.Background>
+                <TextBlock x:Name="StatusIcon" Text="⛔"
+                           FontSize="34" HorizontalAlignment="Center"
+                           VerticalAlignment="Center"/>
+            </Border>
+
+            <!-- Title -->
+            <TextBlock Grid.Row="1" x:Name="TitleText"
+                       Text="ACCESS DENIED"
+                       Foreground="#FFe4e4e7" FontSize="19" FontWeight="Bold"
+                       FontFamily="{StaticResource InterFont}"
+                       HorizontalAlignment="Center" Margin="0,0,0,6"
+                       TextAlignment="Center"/>
+
+            <!-- Subtitle -->
+            <TextBlock Grid.Row="2" x:Name="SubtitleText"
+                       Text="Your account has been restricted"
+                       Foreground="#FF71717a" FontSize="12.5"
+                       FontFamily="{StaticResource InterFont}"
+                       HorizontalAlignment="Center" Margin="0,0,0,18"
+                       TextAlignment="Center"/>
+
+            <!-- Message card -->
+            <Border Grid.Row="3" CornerRadius="12" Padding="18,16"
+                    Margin="0,0,0,16" x:Name="MessageCard"
+                    Background="#FF15152a" BorderThickness="1"
+                    BorderBrush="#FF1e1e36">
+                <TextBlock x:Name="MessageText"
+                           Text="Your account has been banned."
+                           Foreground="#FFa1a1aa" FontSize="13"
+                           FontFamily="{StaticResource InterFont}"
+                           TextWrapping="Wrap" TextAlignment="Center"
+                           LineHeight="20"/>
+            </Border>
+
+            <!-- Details section (shows extra info like trial days remaining, etc.) -->
+            <Border Grid.Row="4" CornerRadius="10" Padding="14,12"
+                    Margin="0,0,0,18" x:Name="DetailsCard"
+                    Visibility="Collapsed"
+                    Background="#0AFFFFFF" BorderThickness="0">
+                <StackPanel>
+                    <Grid x:Name="DetailRow1" Visibility="Collapsed">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock x:Name="DetailLabel1" Grid.Column="0"
+                                   Foreground="#FF71717a" FontSize="11.5"
+                                   FontFamily="{StaticResource InterFont}"/>
+                        <TextBlock x:Name="DetailValue1" Grid.Column="1"
+                                   Foreground="#FFe4e4e7" FontSize="11.5"
+                                   FontWeight="SemiBold"
+                                   FontFamily="{StaticResource InterFont}"/>
+                    </Grid>
+                    <Grid x:Name="DetailRow2" Visibility="Collapsed" Margin="0,6,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock x:Name="DetailLabel2" Grid.Column="0"
+                                   Foreground="#FF71717a" FontSize="11.5"
+                                   FontFamily="{StaticResource InterFont}"/>
+                        <TextBlock x:Name="DetailValue2" Grid.Column="1"
+                                   Foreground="#FFe4e4e7" FontSize="11.5"
+                                   FontWeight="SemiBold"
+                                   FontFamily="{StaticResource InterFont}"/>
+                    </Grid>
+                    <Grid x:Name="DetailRow3" Visibility="Collapsed" Margin="0,6,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock x:Name="DetailLabel3" Grid.Column="0"
+                                   Foreground="#FF71717a" FontSize="11.5"
+                                   FontFamily="{StaticResource InterFont}"/>
+                        <TextBlock x:Name="DetailValue3" Grid.Column="1"
+                                   Foreground="#FFe4e4e7" FontSize="11.5"
+                                   FontWeight="SemiBold"
+                                   FontFamily="{StaticResource InterFont}"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Action Button -->
+            <Border Grid.Row="5" CornerRadius="10" Margin="0,0,0,14" Cursor="Hand"
+                    MouseLeftButtonDown="ActionBtn_Click" x:Name="ActionBtnBorder">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="Background" Value="#FFEF4444"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#FFDC2626"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+                <TextBlock x:Name="ActionBtnText"
+                           Text="Understood" Foreground="White"
+                           FontSize="14" FontWeight="SemiBold"
+                           FontFamily="{StaticResource InterFont}"
+                           HorizontalAlignment="Center" Padding="0,12"
+                           IsHitTestVisible="False"/>
+            </Border>
+
+            <!-- Footer -->
+            <TextBlock Grid.Row="6" HorizontalAlignment="Center"
+                       Foreground="#FF3f3f58" FontSize="10.5"
+                       FontFamily="{StaticResource InterFont}"
+                       TextAlignment="Center">
+                Contact support at legitx.com if you need help
+            </TextBlock>
+        </Grid>
+    </Border>
+</Window>

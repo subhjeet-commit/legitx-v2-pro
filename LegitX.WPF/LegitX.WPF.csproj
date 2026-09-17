@@ -1,0 +1,55 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>LegitX.WPF</RootNamespace>
+    <AssemblyName>LegitX V2</AssemblyName>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PlatformTarget>x64</PlatformTarget>
+    <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
+    <ApplicationIcon>Assets\app.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+
+  <!-- Obfuscation-ready Release: avoids shipping PDB symbols that weaken decompilation. -->
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+  </PropertyGroup>
+
+  <!-- Native apphost fails on this repo path / some SDK+AV setups; `dotnet build` stays green. Single-file EXE needs .NET 8 SDK + working apphost (see scripts/clean-and-publish.ps1). -->
+  <PropertyGroup>
+    <UseAppHost>false</UseAppHost>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- System.Management for WMI driver queries (embedded into main assembly at build — no loose System.Management.dll). -->
+    <PackageReference Include="Costura.Fody" Version="6.0.0" PrivateAssets="all" />
+    <PackageReference Include="Fody" Version="6.9.2" PrivateAssets="all" />
+    <PackageReference Include="System.Management" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\app.ico" />
+    <Resource Include="Assets\logo.png" />
+    <Resource Include="Assets\Fonts\Inter-Regular.ttf" />
+    <Resource Include="Assets\Fonts\Inter-Medium.ttf" />
+    <Resource Include="Assets\Fonts\Inter-SemiBold.ttf" />
+    <Resource Include="Assets\Fonts\Inter-Bold.ttf" />
+    <Resource Include="Assets\Fonts\JetBrainsMono-Regular.ttf" />
+    <Resource Include="Assets\Fonts\JetBrainsMono-Bold.ttf" />
+  </ItemGroup>
+
+  <!-- Embedded Interception driver binaries -->
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\Interception\interception_x64.dll" LogicalName="interception_x64.dll" />
+    <EmbeddedResource Include="Assets\Interception\interception_x86.dll" LogicalName="interception_x86.dll" />
+    <EmbeddedResource Include="Assets\Interception\install-interception.exe" LogicalName="install-interception.exe" />
+  </ItemGroup>
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+  </Target>
+</Project>

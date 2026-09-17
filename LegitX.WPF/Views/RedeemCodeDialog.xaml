@@ -1,0 +1,111 @@
+<Window x:Class="LegitX.WPF.Views.RedeemCodeDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="LegitX V2 — Activate License"
+        Width="440" Height="340"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        ResizeMode="NoResize">
+
+    <Border CornerRadius="16" Background="#FF0c0c18"
+            BorderBrush="#FF1a1a2e" BorderThickness="1.5">
+
+        <Grid Margin="28,22,28,22">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Title bar with close -->
+            <Grid Grid.Row="0" Margin="0,0,0,8" MouseLeftButtonDown="TitleBar_MouseDown">
+                <TextBlock Text="🔑  Activate License"
+                           Foreground="#FFe4e4e7" FontSize="17" FontWeight="SemiBold"
+                           FontFamily="{StaticResource InterFont}"
+                           VerticalAlignment="Center"/>
+                <Button Content="✕" HorizontalAlignment="Right" VerticalAlignment="Top"
+                        Background="Transparent" Foreground="#FF71717a" BorderThickness="0"
+                        FontSize="16" Cursor="Hand" Padding="4,0"
+                        Click="CloseBtn_Click"/>
+            </Grid>
+
+            <!-- Description -->
+            <TextBlock Grid.Row="1" TextWrapping="Wrap" Margin="0,6,0,18"
+                       Foreground="#FF71717a" FontSize="12.5"
+                       FontFamily="{StaticResource InterFont}">
+                Enter your redemption code to activate LegitX V2.
+                <LineBreak/>
+                You received this code when you purchased your license.
+            </TextBlock>
+
+            <!-- Code Input -->
+            <Border Grid.Row="2" CornerRadius="10" Background="#FF15152a"
+                    BorderBrush="#FF27273a" BorderThickness="1" Padding="2" Margin="0,0,0,14">
+                <TextBox x:Name="CodeBox"
+                         Background="Transparent" BorderThickness="0"
+                         Foreground="#FFe4e4e7" CaretBrush="#FFEF4444"
+                         FontSize="16" FontFamily="{StaticResource JetBrainsMonoFont}"
+                         FontWeight="SemiBold" Padding="12,10"
+                         MaxLength="30"
+                         CharacterCasing="Upper"
+                         VerticalContentAlignment="Center"
+                         KeyDown="CodeBox_KeyDown">
+                    <TextBox.Style>
+                        <Style TargetType="TextBox">
+                            <Setter Property="Foreground" Value="#FFe4e4e7"/>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+            </Border>
+
+            <!-- Activate Button -->
+            <Border Grid.Row="3" CornerRadius="10" Margin="0,0,0,12" Cursor="Hand"
+                    MouseLeftButtonDown="ActivateBtn_Click">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="Background" Value="#FFEF4444"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#FFDC2626"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+                <TextBlock x:Name="ActivateBtnText"
+                           Text="Activate" Foreground="White"
+                           FontSize="14" FontWeight="SemiBold"
+                           FontFamily="{StaticResource InterFont}"
+                           HorizontalAlignment="Center" Padding="0,11"
+                           IsHitTestVisible="False"/>
+            </Border>
+
+            <!-- Error message -->
+            <TextBlock x:Name="ErrorText" Grid.Row="4"
+                       Foreground="#FFEF4444" FontSize="12"
+                       FontFamily="{StaticResource InterFont}"
+                       TextWrapping="Wrap" Visibility="Collapsed"
+                       Margin="0,0,0,6"/>
+
+            <!-- Success message -->
+            <TextBlock x:Name="SuccessText" Grid.Row="5"
+                       Foreground="#FF22C55E" FontSize="12"
+                       FontFamily="{StaticResource InterFont}"
+                       TextWrapping="Wrap" Visibility="Collapsed"
+                       Margin="0,0,0,6"/>
+
+            <!-- Footer -->
+            <TextBlock Grid.Row="6" VerticalAlignment="Bottom"
+                       HorizontalAlignment="Center"
+                       Foreground="#FF3f3f58" FontSize="10.5"
+                       FontFamily="{StaticResource InterFont}">
+                Purchase a license at legitx.com
+            </TextBlock>
+        </Grid>
+    </Border>
+</Window>

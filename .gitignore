@@ -1,0 +1,54 @@
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Bb]in/
+[Oo]bj/
+
+# Visual Studio cache/options
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# NuGet Packages (restore on build)
+packages/
+!packages/repositories.config
+
+# Build outputs
+*.dll
+*.exe
+*.pdb
+publish/
+*.log
+*.cache
+*.tmp
+
+# Rider
+.idea/
+
+# ── Node.js / Web Panels ──
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+.env.local
+.env.production
+*.pfx
+*.snk
+*.pem
+
+# Local tooling and analysis caches
+.codebase-memory/
+.firebase/
+
+# Optional third-party obfuscator binaries; install separately and pass its path to the release script
+tools/ConfuserEx/
+
+# ── OS Files ──
+Thumbs.db
+Desktop.ini
+.DS_Store

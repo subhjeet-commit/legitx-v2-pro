@@ -1,0 +1,167 @@
+<Window x:Class="LegitX.WPF.Views.ShortcutSettingsDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Shortcut Settings"
+        Width="480" Height="380"
+        WindowStartupLocation="CenterOwner"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        ResizeMode="NoResize"
+        FontFamily="{DynamicResource InterFont}"
+        ShowInTaskbar="False">
+
+    <Border Background="#FF0F0F18" CornerRadius="16"
+            BorderBrush="#FF2A2A40" BorderThickness="1">
+        <Border.Effect>
+            <DropShadowEffect Color="#000000" BlurRadius="40" ShadowDepth="0" Opacity="0.7"/>
+        </Border.Effect>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Title bar -->
+            <Border Grid.Row="0" Background="Transparent" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown"
+                    Padding="20,14,14,8">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Border Width="32" Height="32" CornerRadius="8" Background="#158B5CF6" Margin="0,0,12,0">
+                        <Path Data="M2,0 L10,0 L12,2 L12,12 L0,12 L0,2 Z M4,4 L4,8 M8,4 L8,8 M4,8 L8,8"
+                              Stroke="#FF8B5CF6" StrokeThickness="1.3" Fill="Transparent"
+                              Width="14" Height="14" Stretch="Uniform"
+                              HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <TextBlock Text="Keyboard Shortcuts" FontSize="15" FontWeight="Bold" Foreground="White"/>
+                        <TextBlock Text="Customize the toggle visibility hotkey" FontSize="10.5"
+                                   Foreground="#FF52525b" Margin="0,2,0,0"/>
+                    </StackPanel>
+
+                    <Button Grid.Column="2" Click="CloseBtn_Click" Cursor="Hand"
+                            Width="32" Height="32" ToolTip="Close">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Setter Property="BorderThickness" Value="0"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border x:Name="Bd" Background="Transparent" CornerRadius="8" Padding="6">
+                                                <Path Data="M2,2 L10,10 M10,2 L2,10" Stroke="#FF52525b"
+                                                      StrokeThickness="1.5" HorizontalAlignment="Center"
+                                                      VerticalAlignment="Center"/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="Bd" Property="Background" Value="#15FFFFFF"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </Grid>
+            </Border>
+
+            <Border Grid.Row="1" Height="1" Margin="20,0" Background="#FF2A2A40"/>
+
+            <!-- Content -->
+            <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" Padding="20,14">
+                <StackPanel x:Name="ShortcutList"/>
+            </ScrollViewer>
+
+            <!-- Footer -->
+            <Border Grid.Row="3" Padding="20,12" Background="#08FFFFFF" CornerRadius="0,0,16,16">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="8"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="0" FontSize="10.5" Foreground="#FF52525b"
+                               VerticalAlignment="Center" TextWrapping="Wrap">
+                        <Run Text="Click a key box and press any key to rebind"/>
+                    </TextBlock>
+
+                    <Button Grid.Column="1" Click="ResetDefaults_Click" Cursor="Hand"
+                            Padding="14,8" FontSize="12">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Setter Property="Foreground" Value="#FFa1a1aa"/>
+                                <Setter Property="BorderBrush" Value="#FF2A2A40"/>
+                                <Setter Property="BorderThickness" Value="1"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                                    CornerRadius="8" Padding="{TemplateBinding Padding}">
+                                                <TextBlock Text="Reset Defaults" HorizontalAlignment="Center"
+                                                           VerticalAlignment="Center" FontSize="12"
+                                                           Foreground="{TemplateBinding Foreground}"/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="Bd" Property="Background" Value="#0AFFFFFF"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+
+                    <Button Grid.Column="3" Click="SaveAndClose_Click" Cursor="Hand"
+                            Padding="14,8" FontSize="12" FontWeight="SemiBold">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Background" Value="#FFEF4444"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="BorderThickness" Value="0"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                                                    CornerRadius="8" Padding="{TemplateBinding Padding}">
+                                                <TextBlock Text="Save" HorizontalAlignment="Center"
+                                                           VerticalAlignment="Center" FontSize="12"
+                                                           FontWeight="SemiBold"
+                                                           Foreground="{TemplateBinding Foreground}"/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="Bd" Property="Background" Value="#FFFF6B6B"/>
+                                                </Trigger>
+                                                <Trigger Property="IsPressed" Value="True">
+                                                    <Setter TargetName="Bd" Property="Background" Value="#FFDC2626"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+</Window>
