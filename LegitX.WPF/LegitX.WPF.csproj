@@ -28,8 +28,8 @@
 
   <ItemGroup>
     <!-- System.Management for WMI driver queries (embedded into main assembly at build — no loose System.Management.dll). -->
-    <PackageReference Include="Costura.Fody" Version="6.0.0" PrivateAssets="all" />
-    <PackageReference Include="Fody" Version="6.9.2" PrivateAssets="all" />
+    <PackageReference Include="Costura.Fody" Version="6.2.0" PrivateAssets="all" />
+    <PackageReference Include="Fody" Version="6.9.3" PrivateAssets="all" />
     <PackageReference Include="System.Management" Version="8.0.0" />
   </ItemGroup>
 
